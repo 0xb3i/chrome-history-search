@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="manifest.json"><img src="https://img.shields.io/github/manifest-json/v/0xb3i/chrome-history-dedupe?color=EA580C&amp;label=version" alt="当前版本"></a>
+  <a href="manifest.json"><img src="https://img.shields.io/github/manifest-json/v/0xb3i/chrome-history-search?color=EA580C&amp;label=version" alt="当前版本"></a>
   <img src="https://img.shields.io/badge/Chrome-105%2B-1C1917?logo=googlechrome&amp;logoColor=white" alt="Chrome 105 及以上">
 </p>
 
@@ -13,7 +13,7 @@
   <a href="#快捷键">快捷键</a>&nbsp;&nbsp;·&nbsp;&nbsp;
   <a href="#隐私与数据">隐私与数据</a>&nbsp;&nbsp;·&nbsp;&nbsp;
   <a href="#常见问题">常见问题</a>&nbsp;&nbsp;·&nbsp;&nbsp;
-  <a href="https://github.com/0xb3i/chrome-history-dedupe/issues">反馈问题</a>
+  <a href="https://github.com/0xb3i/chrome-history-search/issues">反馈问题</a>
 </p>
 
 <p align="center">
@@ -46,17 +46,17 @@
 
 需要 **Chrome 105 或更新版本**，支持 macOS、Windows 和 Linux。通过开发者模式加载项目目录即可使用，无需构建或安装 Node.js。
 
-1. [下载 ZIP](https://github.com/0xb3i/chrome-history-dedupe/archive/refs/heads/main.zip) 并解压到固定目录，或使用 Git：
+1. [下载 ZIP](https://github.com/0xb3i/chrome-history-search/archive/refs/heads/main.zip) 并解压到固定目录，或使用 Git：
 
    ```bash
-   git clone https://github.com/0xb3i/chrome-history-dedupe.git
+   git clone https://github.com/0xb3i/chrome-history-search.git
    ```
 
 2. 打开 `chrome://extensions`，开启右上角的「开发者模式」。
 3. 点击「加载已解压的扩展程序」，选择包含 `manifest.json` 的项目根目录。
 4. 将「喵迹」固定到工具栏，点击小猫图标或按 `Option + S` / `Alt + S` 开始搜索。
 
-> **更新**：在原目录更新文件（Git 安装可运行 `git pull --ff-only`），再到 `chrome://extensions` 点击「重新加载」。近期改动见 [提交记录](https://github.com/0xb3i/chrome-history-dedupe/commits/main/)。
+> **更新**：在原目录更新文件（Git 安装可运行 `git pull --ff-only`），再到 `chrome://extensions` 点击「重新加载」。近期改动见 [提交记录](https://github.com/0xb3i/chrome-history-search/commits/main/)。
 
 ## 快捷键
 
@@ -124,7 +124,7 @@ npm ci
 npm run verify
 ```
 
-- **反馈问题**：在 [Issues](https://github.com/0xb3i/chrome-history-dedupe/issues) 中附上操作系统、Chrome 版本、扩展版本与复现步骤（涉及浏览记录的截图请隐去私人信息）。
+- **反馈问题**：在 [Issues](https://github.com/0xb3i/chrome-history-search/issues) 中附上操作系统、Chrome 版本、扩展版本与复现步骤（涉及浏览记录的截图请隐去私人信息）。
 - **贡献代码**：保持改动聚焦，遵循 [项目约定](AGENTS.md)，提交前运行 `npm run verify`。
 
 ## 致谢
