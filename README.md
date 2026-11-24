@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./assets/readme/hero.svg" width="100%" alt="喵迹 — 用记得的名字找回看过的页面：Chrome 历史记录去重、曾用名搜索与重命名固定扩展">
+  <img src="./assets/readme/hero.svg" width="100%" alt="喵迹：用记得的名字，找回看过的页面">
 </p>
 
 <p align="center">

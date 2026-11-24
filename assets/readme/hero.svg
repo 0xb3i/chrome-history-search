@@ -1,61 +1,47 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="330" viewBox="0 0 1200 330" role="img" aria-labelledby="title desc">
-  <title id="title">喵迹 — Chrome 历史记录去重与曾用名搜索扩展</title>
-  <desc id="desc">Hero banner for 喵迹 Chrome extension showing duplicate history entries merged into a single pinned, renamed search result.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320" role="img" aria-labelledby="title desc">
+  <title id="title">喵迹</title>
+  <desc id="desc">喵迹：用记得的名字，找回看过的页面。右侧示意搜索“周报”时，通过曾用名找到已重命名并固定的页面。</desc>
 
-  <rect width="1200" height="330" rx="24" fill="#FAF8F5"/>
-  <rect x="0.5" y="0.5" width="1199" height="329" rx="23.5" fill="none" stroke="#E7E2DA"/>
+  <rect width="1200" height="320" rx="24" fill="#FBF7F2"/>
 
-  <!-- Left Title Block -->
-  <g transform="translate(56 48)">
-    <rect x="0" y="0" width="244" height="32" rx="16" fill="#FFF7ED" stroke="#FDBA74"/>
-    <circle cx="18" cy="16" r="5" fill="#EA580C"/>
-    <text x="32" y="21" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="14" font-weight="600" fill="#C2410C">CHROME 105+ · LOCAL FIRST</text>
-
-    <text x="0" y="96" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="56" font-weight="800" fill="#1C1917" letter-spacing="-1">喵迹</text>
-    <text x="128" y="94" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="28" font-weight="600" fill="#57534E">用记得的名字，找回看过的页面</text>
-
-    <text x="0" y="142" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="21" fill="#44403C">自动归并重复链接、保留文档曾用名、支持网页重命名与置顶固定。</text>
-    <text x="0" y="172" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="21" fill="#44403C">所有索引与别名数据保存在本机，不上传云端，不删原始历史。</text>
-
-    <!-- Shortcut keycaps -->
-    <g transform="translate(0 202)">
-      <rect x="0" y="0" width="170" height="36" rx="9" fill="#FFFFFF" stroke="#D6D3CD"/>
-      <text x="16" y="23" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="16" font-weight="600" fill="#1C1917">⌥ Option + S</text>
-
-      <rect x="184" y="0" width="144" height="36" rx="9" fill="#FFFFFF" stroke="#D6D3CD"/>
-      <text x="200" y="23" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="16" font-weight="600" fill="#1C1917">⌘K 操作面板</text>
-
-      <rect x="342" y="0" width="144" height="36" rx="9" fill="#FFF7ED" stroke="#FDBA74"/>
-      <text x="358" y="23" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="16" font-weight="600" fill="#C2410C">零构建直接加载</text>
+  <g id="title-block" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Segoe UI', sans-serif">
+    <g transform="translate(72 60) scale(2)">
+<path d="M4 25.942C4 28.1739 5.76327 30 7.91837 30H24.0816C26.2367 30 28 28.0725 28 25.8406V6.4297C28 5.1297 26.4099 4.5297 25.5155 5.4297L20.9736 10H11.1617L6.5 5.4297C5.6 4.5297 4 5.1297 4 6.4297V25.942Z" fill="#FFB02E"/>
+<path d="M9.00005 10.9265L6.20005 13.5265C5.70005 14.0265 4.80005 13.6265 4.80005 12.9265V7.72648C4.80005 7.12648 5.70005 6.72648 6.20005 7.22648L9.00005 9.82648C9.30005 10.1265 9.30005 10.6265 9.00005 10.9265Z" fill="#FF822D"/>
+<path d="M23.05 10.9265L25.85 13.5265C26.35 14.0265 27.25 13.6265 27.25 12.9265V7.72648C27.25 7.12648 26.35 6.72648 25.85 7.22648L23.05 9.82648C22.75 10.1265 22.75 10.6265 23.05 10.9265Z" fill="#FF822D"/>
+<path d="M17.0429 20H14.9571C14.5117 20 14.2886 20.5386 14.6036 20.8536L15.6465 21.8964C15.8417 22.0917 16.1583 22.0917 16.3536 21.8964L17.3965 20.8536C17.7114 20.5386 17.4884 20 17.0429 20Z" fill="#F70A8D"/>
+<path d="M2.72372 20.0528C2.47673 19.9293 2.17639 20.0294 2.0529 20.2764C1.9294 20.5234 2.02951 20.8237 2.2765 20.9472L6.2765 22.9472C6.52349 23.0707 6.82383 22.9706 6.94732 22.7236C7.07082 22.4766 6.97071 22.1763 6.72372 22.0528L2.72372 20.0528Z" fill="#FF6723"/>
+<path d="M2.72372 26.9472C2.47673 27.0707 2.17639 26.9706 2.0529 26.7236C1.9294 26.4766 2.02951 26.1763 2.2765 26.0528L6.2765 24.0528C6.52349 23.9293 6.82383 24.0294 6.94732 24.2764C7.07082 24.5234 6.97071 24.8237 6.72372 24.9472L2.72372 26.9472Z" fill="#FF6723"/>
+<path d="M29.9473 20.2764C29.8238 20.0294 29.5235 19.9293 29.2765 20.0528L25.2765 22.0528C25.0295 22.1763 24.9294 22.4766 25.0529 22.7236C25.1764 22.9706 25.4767 23.0707 25.7237 22.9472L29.7237 20.9472C29.9707 20.8237 30.0708 20.5234 29.9473 20.2764Z" fill="#FF6723"/>
+<path d="M29.2765 26.9472C29.5235 27.0707 29.8238 26.9706 29.9473 26.7236C30.0708 26.4766 29.9707 26.1763 29.7237 26.0528L25.7237 24.0528C25.4767 23.9293 25.1764 24.0294 25.0529 24.2764C24.9294 24.5234 25.0295 24.8237 25.2765 24.9472L29.2765 26.9472Z" fill="#FF6723"/>
+<path d="M12 17C11.4477 17 11 17.4477 11 18V19C11 19.5523 11.4477 20 12 20C12.5523 20 13 19.5523 13 19V18C13 17.4477 12.5523 17 12 17Z" fill="#402A32"/>
+<path d="M20 17C19.4477 17 19 17.4477 19 18V19C19 19.5523 19.4477 20 20 20C20.5523 20 21 19.5523 21 19V18C21 17.4477 20.5523 17 20 17Z" fill="#402A32"/>
+<path d="M15.9999 23.106C15.4625 23.6449 14.5434 24 13.4999 24C12.4681 24 11.5579 23.6527 11.0181 23.1239C11.1384 23.8481 11.9461 27.5 15.9999 27.5C20.0538 27.5 20.8615 23.8481 20.9818 23.1239C20.4419 23.6527 19.5317 24 18.4999 24C17.4564 24 16.5374 23.6449 15.9999 23.106Z" fill="#BB1D80"/>
     </g>
+    <text x="68" y="200" font-size="76" font-weight="700" letter-spacing="2" fill="#1C1917">喵迹</text>
+    <text x="72" y="252" font-size="26" fill="#78716C">用记得的名字，找回看过的页面</text>
   </g>
 
-  <!-- Right Visual Proof: Dedupe & Rename Transformation -->
-  <g transform="translate(716 36)">
-    <rect x="0" y="0" width="428" height="258" rx="18" fill="#FFFFFF" stroke="#E7E2DA"/>
-
-    <!-- Raw noisy history items -->
-    <text x="22" y="30" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="13" font-weight="600" fill="#78716C">BEFORE · 重复历史散落</text>
-    <g transform="translate(22 42)">
-      <rect x="0" y="0" width="384" height="32" rx="8" fill="#F5F5F4" stroke="#E7E5E4"/>
-      <text x="14" y="21" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="15" fill="#78716C">未命名文档 - 飞书云文档 (?from=share)</text>
-
-      <rect x="0" y="38" width="384" height="32" rx="8" fill="#F5F5F4" stroke="#E7E5E4"/>
-      <text x="14" y="59" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="15" fill="#78716C">Q4 周报草稿 - 飞书云文档 (#section-2)</text>
+  <g id="search-popup" transform="translate(628 48)" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Segoe UI', sans-serif">
+    <rect width="500" height="224" rx="18" fill="#FFFFFF" stroke="#EDE6DD"/>
+    <g id="query">
+      <circle cx="40" cy="44" r="8" fill="none" stroke="#A8A29E" stroke-width="2"/>
+      <path d="M46 50 L52 56" stroke="#A8A29E" stroke-width="2" stroke-linecap="round"/>
+      <text x="68" y="52" font-size="22" fill="#1C1917">周报</text>
+      <rect x="114" y="32" width="2" height="26" fill="#EA580C"/>
+      <path d="M24 82 H476" stroke="#F1ECE5"/>
     </g>
-
-    <!-- Merge arrow -->
-    <path d="M214 122 L214 146 M206 138 L214 146 L222 138" stroke="#EA580C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-
-    <!-- Merged & Renamed result -->
-    <text x="22" y="162" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="13" font-weight="700" fill="#EA580C">AFTER · 归并 + 重命名 + 曾用名</text>
-    <g transform="translate(22 174)">
-      <rect x="0" y="0" width="384" height="66" rx="12" fill="#FFF7ED" stroke="#EA580C" stroke-width="2"/>
-      <circle cx="22" cy="24" r="6" fill="#EA580C"/>
-      <text x="36" y="30" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="19" font-weight="700" fill="#1C1917">周报模板（固定）</text>
-      <rect x="302" y="12" width="68" height="24" rx="6" fill="#FFEDD5"/>
-      <text x="313" y="29" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="13" font-weight="600" fill="#C2410C">飞书文档</text>
-      <text x="18" y="53" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="14" fill="#57534E">曾用名: Q4 周报草稿 · 归并 2 条重复链接</text>
+    <g id="hit" transform="translate(12 94)">
+      <rect width="476" height="66" rx="12" fill="#FFF3E8"/>
+      <text x="20" y="30" font-size="22" font-weight="600" fill="#1C1917"><tspan fill="#EA580C">周报</tspan>模板</text>
+      <text x="20" y="54" font-size="18" fill="#8A817A">曾用名 · Q4 <tspan fill="#EA580C">周报</tspan>草稿</text>
+      <g transform="translate(442 22)" fill="#EA580C">
+        <path d="M6 0 H14 L13 8 L17 12 V14 H11 V22 L10 23 L9 22 V14 H3 V12 L7 8 Z"/>
+      </g>
+    </g>
+    <g id="other" transform="translate(32 172)">
+      <text x="0" y="26" font-size="20" fill="#A8A29E">Q3 <tspan fill="#C2410C" fill-opacity=".6">周报</tspan>汇总</text>
+      <text x="456" y="26" font-size="18" fill="#C4BDB6" text-anchor="end">飞书云文档</text>
     </g>
   </g>
 </svg>
