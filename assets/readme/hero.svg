@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="330" viewBox="0 0 1200 330" role="img" aria-labelledby="title desc">
+  <title id="title">喵迹 — Chrome 历史记录去重与曾用名搜索扩展</title>
+  <desc id="desc">Hero banner for 喵迹 Chrome extension showing duplicate history entries merged into a single pinned, renamed search result.</desc>
+
+  <rect width="1200" height="330" rx="24" fill="#FAF8F5"/>
+  <rect x="0.5" y="0.5" width="1199" height="329" rx="23.5" fill="none" stroke="#E7E2DA"/>
+
+  <!-- Left Title Block -->
+  <g transform="translate(56 48)">
+    <rect x="0" y="0" width="244" height="32" rx="16" fill="#FFF7ED" stroke="#FDBA74"/>
+    <circle cx="18" cy="16" r="5" fill="#EA580C"/>
+    <text x="32" y="21" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="14" font-weight="600" fill="#C2410C">CHROME 105+ · LOCAL FIRST</text>
+
+    <text x="0" y="96" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="56" font-weight="800" fill="#1C1917" letter-spacing="-1">喵迹</text>
+    <text x="128" y="94" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="28" font-weight="600" fill="#57534E">用记得的名字，找回看过的页面</text>
+
+    <text x="0" y="142" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="21" fill="#44403C">自动归并重复链接、保留文档曾用名、支持网页重命名与置顶固定。</text>
+    <text x="0" y="172" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="21" fill="#44403C">所有索引与别名数据保存在本机，不上传云端，不删原始历史。</text>
+
+    <!-- Shortcut keycaps -->
+    <g transform="translate(0 202)">
+      <rect x="0" y="0" width="170" height="36" rx="9" fill="#FFFFFF" stroke="#D6D3CD"/>
+      <text x="16" y="23" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="16" font-weight="600" fill="#1C1917">⌥ Option + S</text>
+
+      <rect x="184" y="0" width="144" height="36" rx="9" fill="#FFFFFF" stroke="#D6D3CD"/>
+      <text x="200" y="23" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="16" font-weight="600" fill="#1C1917">⌘K 操作面板</text>
+
+      <rect x="342" y="0" width="144" height="36" rx="9" fill="#FFF7ED" stroke="#FDBA74"/>
+      <text x="358" y="23" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="16" font-weight="600" fill="#C2410C">零构建直接加载</text>
+    </g>
+  </g>
+
+  <!-- Right Visual Proof: Dedupe & Rename Transformation -->
+  <g transform="translate(716 36)">
+    <rect x="0" y="0" width="428" height="258" rx="18" fill="#FFFFFF" stroke="#E7E2DA"/>
+
+    <!-- Raw noisy history items -->
+    <text x="22" y="30" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="13" font-weight="600" fill="#78716C">BEFORE · 重复历史散落</text>
+    <g transform="translate(22 42)">
+      <rect x="0" y="0" width="384" height="32" rx="8" fill="#F5F5F4" stroke="#E7E5E4"/>
+      <text x="14" y="21" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="15" fill="#78716C">未命名文档 - 飞书云文档 (?from=share)</text>
+
+      <rect x="0" y="38" width="384" height="32" rx="8" fill="#F5F5F4" stroke="#E7E5E4"/>
+      <text x="14" y="59" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="15" fill="#78716C">Q4 周报草稿 - 飞书云文档 (#section-2)</text>
+    </g>
+
+    <!-- Merge arrow -->
+    <path d="M214 122 L214 146 M206 138 L214 146 L222 138" stroke="#EA580C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+    <!-- Merged & Renamed result -->
+    <text x="22" y="162" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="13" font-weight="700" fill="#EA580C">AFTER · 归并 + 重命名 + 曾用名</text>
+    <g transform="translate(22 174)">
+      <rect x="0" y="0" width="384" height="66" rx="12" fill="#FFF7ED" stroke="#EA580C" stroke-width="2"/>
+      <circle cx="22" cy="24" r="6" fill="#EA580C"/>
+      <text x="36" y="30" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="19" font-weight="700" fill="#1C1917">周报模板（固定）</text>
+      <rect x="302" y="12" width="68" height="24" rx="6" fill="#FFEDD5"/>
+      <text x="313" y="29" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="13" font-weight="600" fill="#C2410C">飞书文档</text>
+      <text x="18" y="53" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="14" fill="#57534E">曾用名: Q4 周报草稿 · 归并 2 条重复链接</text>
+    </g>
+  </g>
+</svg>
