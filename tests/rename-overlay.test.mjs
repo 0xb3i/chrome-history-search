@@ -110,6 +110,42 @@ test('restore errors remain inline and re-enable controls for retry', async () =
 });
 
 
+test('unbookmarked page can be bookmarked directly without changing its original title', async () => {
+  const app = createOverlayHarness();
+  app.open({ ...draft, currentTitle: '原名', originalTitle: '原名', hasTitleOverride: false });
+  assert.equal(app.panel.dataset.saved, 'false');
+  const saveButton = app.panel.querySelector('[data-save-action]');
+  const restoreButton = app.panel.querySelector('[data-restore-available]');
+  assert.equal(saveButton.textContent, '收藏');
+  assert.equal(saveButton.disabled, false);
+  assert.equal(restoreButton.hidden, true);
+  app.panel.fire('submit');
+  assert.equal(app.messages[0].message.title, '原名');
+  app.messages[0].respond({ ok: true });
+  await flushPromises();
+  assert.equal(app.root.children[0].shadow.querySelector('.message').children[1].textContent, '已收藏');
+});
+
+test('already bookmarked page disables save until edited and supports canceling bookmark', async () => {
+  const app = createOverlayHarness();
+  app.open({ ...draft, hasTitleOverride: true });
+  assert.equal(app.panel.dataset.saved, 'true');
+  const saveButton = app.panel.querySelector('[data-save-action]');
+  const restoreButton = app.panel.querySelector('[data-restore-available]');
+  const input = app.panel.querySelector('input');
+  assert.equal(saveButton.textContent, '保存');
+  assert.equal(saveButton.disabled, true);
+  assert.equal(restoreButton.textContent, '取消收藏');
+  assert.equal(restoreButton.hidden, false);
+  input.value = '新的收藏名';
+  input.fire('input');
+  assert.equal(saveButton.disabled, false);
+  restoreButton.fire('click');
+  app.messages[0].respond({ ok: true });
+  await flushPromises();
+  assert.equal(app.root.children[0].shadow.querySelector('.message').children[1].textContent, '已取消收藏');
+});
+
 test('inline rename follows saved theme and later changes without using the host page storage', () => {
   const app = createOverlayHarness();
   app.open();

@@ -28,6 +28,10 @@
 
     currentSession?.dispose();
 
+    const isSaved = Boolean(draft.hasTitleOverride);
+    const headingText = isSaved ? '编辑收藏' : '收藏网页';
+    const saveLabel = isSaved ? '保存' : '收藏';
+
     const host = document.createElement('div');
     host.id = HOST_ID;
     document.documentElement.append(host);
@@ -38,10 +42,16 @@
 
     const panel = document.createElement('form');
     panel.className = 'panel';
-    panel.setAttribute('aria-label', '重命名网页');
+    panel.dataset.saved = String(isSaved);
+    panel.setAttribute('aria-label', headingText);
 
     const title = document.createElement('h2');
-    title.textContent = '重命名网页';
+    const icon = document.createElement('span');
+    icon.className = 'bookmark-icon';
+    icon.setAttribute('aria-hidden', 'true');
+    const titleText = document.createElement('span');
+    titleText.textContent = headingText;
+    title.append(icon, titleText);
 
     const url = document.createElement('p');
     url.className = 'target-url';
@@ -64,6 +74,7 @@
     const input = document.createElement('input');
     input.type = 'text';
     input.autocomplete = 'off';
+    input.placeholder = '输入便于检索的名称';
     input.value = draft.currentTitle || draft.url;
 
     field.append(label, input);
@@ -78,10 +89,10 @@
     const restoreButton = document.createElement('button');
     restoreButton.type = 'button';
     restoreButton.className = 'secondary restore';
-    restoreButton.dataset.restoreAvailable = String(draft.hasTitleOverride);
-    restoreButton.textContent = '还原原名';
-    restoreButton.disabled = !draft.hasTitleOverride;
-    restoreButton.hidden = !draft.hasTitleOverride;
+    restoreButton.dataset.restoreAvailable = String(isSaved);
+    restoreButton.textContent = '取消收藏';
+    restoreButton.disabled = !isSaved;
+    restoreButton.hidden = !isSaved;
 
     const cancelButton = document.createElement('button');
     cancelButton.type = 'button';
@@ -91,12 +102,13 @@
     const saveButton = document.createElement('button');
     saveButton.type = 'submit';
     saveButton.dataset.saveAction = '';
+    saveButton.dataset.idleLabel = saveLabel;
     saveButton.className = 'primary';
-    saveButton.textContent = '保存';
-    panel.dataset.initialName = input.value.trim().replace(/\s+/g, ' ');
-    saveButton.disabled = true;
+    saveButton.textContent = saveLabel;
+    panel.dataset.initialName = normalizeInputTitle(input.value);
+    saveButton.disabled = isSaveDisabled(panel, input);
     input.addEventListener('input', () => {
-      saveButton.disabled = !input.value.trim() || input.value.trim().replace(/\s+/g, ' ') === panel.dataset.initialName;
+      saveButton.disabled = isSaveDisabled(panel, input);
     });
 
     const primaryActions = document.createElement('div');
@@ -177,8 +189,20 @@
     input.select();
   }
 
+  function normalizeInputTitle(value) {
+    return String(value ?? '').trim().replace(/\s+/g, ' ');
+  }
+
+  function isSaveDisabled(panel, input) {
+    const normalized = normalizeInputTitle(input.value);
+    if (!normalized) return true;
+    // Unbookmarked pages can be bookmarked directly without changing their title.
+    if (panel.dataset.saved !== 'true') return false;
+    return normalized === panel.dataset.initialName;
+  }
+
   async function saveRename(draft, input, status, panel, shadow, overlay, session) {
-    const title = input.value.trim().replace(/\s+/g, ' ');
+    const title = normalizeInputTitle(input.value);
 
     if (!title) {
       setError(status, '标题不能为空。');
@@ -195,7 +219,7 @@
         url: draft.url
       });
       if (!session.isActive()) return;
-      showSuccessMessage(shadow, overlay, '保存成功');
+      showSuccessMessage(shadow, overlay, panel.dataset.saved === 'true' ? '已保存' : '已收藏');
       session.closeSoon();
     } catch (error) {
       if (!session.isActive()) return;
@@ -212,12 +236,12 @@
         titleOverrideKey: draft.titleOverrideKey
       });
       if (!session.isActive()) return;
-      showSuccessMessage(shadow, overlay, '已还原原名');
+      showSuccessMessage(shadow, overlay, '已取消收藏');
       session.closeSoon();
     } catch (error) {
       if (!session.isActive()) return;
       setPending(panel, false);
-      setError(status, error.message || '还原失败。');
+      setError(status, error.message || '取消收藏失败。');
     }
   }
 
@@ -249,14 +273,14 @@
     for (const control of panel.querySelectorAll('input, button')) {
       control.disabled = isPending;
     }
-    panel.querySelector('[data-save-action]').textContent = isPending ? '处理中' : '保存';
+    const saveButton = panel.querySelector('[data-save-action]');
+    saveButton.textContent = isPending ? '处理中' : (saveButton.dataset.idleLabel || '保存');
 
     if (!isPending) {
       const restoreButton = panel.querySelector('[data-restore-available]');
       restoreButton.disabled = restoreButton.dataset.restoreAvailable !== 'true';
       const input = panel.querySelector('input');
-      panel.querySelector('[data-save-action]').disabled = !input.value.trim() ||
-        input.value.trim().replace(/\s+/g, ' ') === panel.dataset.initialName;
+      saveButton.disabled = isSaveDisabled(panel, input);
     }
 
     if (isPending) {
@@ -345,11 +369,23 @@
       }
 
       h2 {
+        align-items: center;
         color: var(--text);
+        display: flex;
         font-size: 14px;
         font-weight: 600;
+        gap: 6px;
         line-height: 20px;
         margin: 0;
+      }
+
+      .bookmark-icon {
+        background: var(--accent);
+        display: inline-block;
+        flex: 0 0 15px;
+        height: 15px;
+        mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M5 2.25h6a1.25 1.25 0 0 1 1.25 1.25v10.25L8 11.05l-4.25 2.7V3.5A1.25 1.25 0 0 1 5 2.25z' fill='none' stroke='black' stroke-width='1.4' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+        width: 15px;
       }
 
       .field {

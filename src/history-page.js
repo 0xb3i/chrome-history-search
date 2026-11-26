@@ -227,7 +227,7 @@ function syncRenamedOnlyControl() {
   renamedOnlyCheckbox.checked = showRenamedOnly;
   const trigger = document.querySelector('#view-options');
   trigger.classList.toggle('is-filtered', showRenamedOnly);
-  trigger.title = `${showRenamedOnly ? '仅显示已命名' : '筛选与排序'}（${RENAMED_ONLY_SHORTCUT} 切换）`;
+  trigger.title = `${showRenamedOnly ? '仅显示已收藏' : '筛选与排序'}（${RENAMED_ONLY_SHORTCUT} 切换）`;
 }
 
 // The filter panel only shapes the result list: renamed-only and sort.
@@ -332,7 +332,7 @@ function initializeRowActions() {
           setStatus('已复制链接');
         } catch { setStatus('复制失败，请重试。', { error: true }); }
       }),
-      menuItem('重命名网页', '', () => { close({ restoreFocus: false }); renameItem(item); }),
+      menuItem(item.isTitleRenamed ? '编辑收藏' : '收藏网页', '', () => { close({ restoreFocus: false }); renameItem(item); }),
       menuItem(item.isPinned ? '取消固定' : '固定到顶部', '', () => { close(); togglePinnedItem(item); }),
       ...(others > 0 ? [menuItem('同名的其他链接', String(others), showLinks)] : []),
       menuItem('只看此来源', label, () => {
@@ -681,8 +681,8 @@ function createResultItem(item, groupKey, { distinguishUrl = false, members = [i
   if (item.isTitleRenamed) {
     const label = document.createElement('span');
     label.className = 'result-custom-label';
-    label.textContent = '已命名';
-    label.title = '当前显示的是自定义网页名';
+    label.textContent = '已收藏';
+    label.title = '已收藏页面';
     titleRow.append(label);
   }
 
@@ -827,8 +827,15 @@ function createResultMeta(item, { groupKey = null } = {}) {
 
 function createRenameDialog() {
   return createRenameDialogShell({
-    title: '重命名网页',
+    title: '收藏网页',
+    savedTitle: '编辑收藏',
     fieldLabel: '名称',
+    placeholder: '输入便于检索的名称',
+    restoreLabel: '取消收藏',
+    idleSaveLabel: '收藏',
+    savedSaveLabel: '保存',
+    allowUnchangedCreate: true,
+    showBookmarkIcon: true,
     extraKey: 'url',
     onCancel: closeRenameDialog,
     onRestore: restoreRenameDialogOriginalTitle,
@@ -841,7 +848,14 @@ function createRenameDialog() {
 
 function createRenameDialogShell({
   title: titleText,
+  savedTitle = titleText,
   fieldLabel,
+  placeholder = '',
+  restoreLabel = '还原原名',
+  idleSaveLabel = '保存',
+  savedSaveLabel = '保存',
+  allowUnchangedCreate = false,
+  showBookmarkIcon = false,
   extraKey,
   showExtra = true,
   onCancel,
@@ -861,7 +875,17 @@ function createRenameDialogShell({
   header.className = 'rename-dialog-header';
 
   const title = document.createElement('h2');
-  title.textContent = titleText;
+  const titleLabel = document.createElement('span');
+  titleLabel.textContent = titleText;
+  if (showBookmarkIcon) {
+    title.className = 'rename-dialog-title';
+    const icon = document.createElement('span');
+    icon.className = 'bookmark-dialog-icon';
+    icon.setAttribute('aria-hidden', 'true');
+    title.append(icon, titleLabel);
+  } else {
+    title.append(titleLabel);
+  }
 
   const extra = document.createElement('p');
   extra.className = 'rename-dialog-url';
@@ -881,6 +905,7 @@ function createRenameDialogShell({
   const input = document.createElement('input');
   input.type = 'text';
   input.autocomplete = 'off';
+  if (placeholder) input.placeholder = placeholder;
 
   field.append(label, input);
 
@@ -899,21 +924,37 @@ function createRenameDialogShell({
   const restoreButton = document.createElement('button');
   restoreButton.className = 'secondary-button rename-restore';
   restoreButton.type = 'button';
-  restoreButton.textContent = '还原原名';
+  restoreButton.textContent = restoreLabel;
 
   const saveButton = document.createElement('button');
   saveButton.className = 'primary-button';
   saveButton.type = 'submit';
-  saveButton.textContent = '保存';
+  saveButton.textContent = idleSaveLabel;
 
   const primaryActions = document.createElement('div');
   primaryActions.className = 'rename-primary-actions';
   primaryActions.append(cancelButton, saveButton);
   actions.append(restoreButton, primaryActions);
   formElement.append(header, field, status, actions);
+  const dialog = {
+    element,
+    formElement,
+    titleLabel,
+    input,
+    [extraKey]: extra,
+    saveButton,
+    cancelButton,
+    restoreButton,
+    status,
+    titleText,
+    savedTitle,
+    idleSaveLabel,
+    savedSaveLabel,
+    allowUnchangedCreate,
+    canRestore: false
+  };
   input.addEventListener('input', () => {
-    saveButton.disabled = input.disabled || !input.value.trim() ||
-      input.value.trim().replace(/\s+/g, ' ') === element.dataset.initialName;
+    saveButton.disabled = input.disabled || isRenameDialogSaveDisabled(dialog);
   });
   element.append(formElement);
 
@@ -934,15 +975,7 @@ function createRenameDialogShell({
     onSubmit();
   });
 
-  return {
-    element,
-    input,
-    [extraKey]: extra,
-    saveButton,
-    cancelButton,
-    restoreButton,
-    status
-  };
+  return dialog;
 }
 
 function createPinIcon() {
@@ -1067,7 +1100,7 @@ function renderEmptyState() {
   const hasConditions = Boolean(sourceFilter || searchSnapshot?.query || showRenamedOnly || searchSnapshot?.range !== 'all');
   heading.textContent = hasConditions ? '没有找到匹配页面' : '暂无可显示的历史记录';
   const hint = document.createElement('p');
-  hint.textContent = showRenamedOnly ? '当前仅显示已命名页面，可以清除筛选再试。'
+  hint.textContent = showRenamedOnly ? '当前仅显示已收藏页面，可以清除筛选再试。'
     : searchSnapshot?.range !== 'all' ? '当前时间范围内没有结果，可以搜索全部时间。'
       : searchSnapshot?.query ? '试试更短的标题或曾用名。' : '浏览网页后，历史记录会自动出现在这里。';
   const actions = document.createElement('div');
@@ -1107,6 +1140,10 @@ function renameItem(item) {
   renameDialog.url.title = item.url || '';
   renameDialog.status.textContent = '';
   renameDialog.canRestore = Boolean(item.isTitleRenamed);
+  const heading = renameDialog.canRestore ? renameDialog.savedTitle : renameDialog.titleText;
+  renameDialog.titleLabel.textContent = heading;
+  renameDialog.element.setAttribute('aria-label', heading);
+  renameDialog.formElement.dataset.saved = String(renameDialog.canRestore);
   renameDialog.element.dataset.initialName = renameDialog.input.value.trim().replace(/\s+/g, ' ');
   setRenamePending(renameDialog, false);
 
@@ -1120,36 +1157,43 @@ async function saveRenameDialogTitle() {
     renameDialog.input.focus();
     return;
   }
+  const message = renameDialog.canRestore ? '已保存' : '已收藏';
   await runRenameOperation(renameSession, renameDialog, (item) =>
     saveTitleOverride(item.titleOverrideKey || getHistoryItemTitleOverrideKey(item), title, { targetUrl: item.url }),
-    closeRenameDialog);
+    closeRenameDialog, message);
 }
 
 async function restoreRenameDialogOriginalTitle() {
   await runRenameOperation(renameSession, renameDialog, (item) => deleteTitleOverrides([
     ...(item.titleOverrideKeys ?? []), item.titleOverrideKey || getHistoryItemTitleOverrideKey(item)
-  ]), closeRenameDialog);
+  ]), closeRenameDialog, '已取消收藏');
+}
+
+function isRenameDialogSaveDisabled(dialog) {
+  const value = getRenameDialogInputValue(dialog);
+  if (!value) return true;
+  if (dialog.allowUnchangedCreate && !dialog.canRestore) return false;
+  return value === dialog.element.dataset.initialName;
 }
 
 function setRenamePending(dialog, pending) {
   dialog.input.disabled = pending;
-  dialog.saveButton.disabled = pending || !dialog.input.value.trim() ||
-    getRenameDialogInputValue(dialog) === dialog.element.dataset.initialName;
+  dialog.saveButton.disabled = pending || isRenameDialogSaveDisabled(dialog);
   dialog.restoreButton.disabled = pending || !dialog.canRestore;
   dialog.restoreButton.hidden = !dialog.canRestore;
-  dialog.saveButton.textContent = pending ? '处理中' : '保存';
-  if (pending) dialog.status.textContent = '正在保存更改…';
+  dialog.saveButton.textContent = pending ? '处理中' : (dialog.canRestore ? dialog.savedSaveLabel : dialog.idleSaveLabel);
+  if (pending) dialog.status.textContent = '正在保存更改';
 }
 
-function runRenameOperation(session, dialog, operation, close) {
+function runRenameOperation(session, dialog, operation, close, successMessage = '更改已保存') {
   return session.run(operation, {
     pending: (value) => setRenamePending(dialog, value),
     success: () => {
       close();
-      setStatus('更改已保存');
+      setStatus(successMessage);
       statusPill.parentElement.classList.remove('visually-hidden');
       setTimeout(() => {
-        if (statusPill.textContent === '更改已保存') statusPill.parentElement.classList.add('visually-hidden');
+        if (statusPill.textContent === successMessage) statusPill.parentElement.classList.add('visually-hidden');
       }, 2000);
     },
     error: (error) => { dialog.status.textContent = error.message || '操作失败。'; }

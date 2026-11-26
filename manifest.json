@@ -1,7 +1,8 @@
 {
   "manifest_version": 3,
   "name": "喵迹",
-  "version": "1.12.3",
+  "version": "1.14.3",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmkWIO7p0LX35sudEkJ38cQVtBWuTAbgkJ9Nqg/LNYz+Fg8+9FmJm4eGjKf57z6le8K8KOZ6RuVxgWieDEOjEpHZdgbCNwzeZmFgwMpFYzTxoM6+O2J//lgBauzbzmSOIpBimoY35hNXUayV8BoRCunYdbgzqEoAUFjsd2udcpssdPlOFD50zl40hfXSR0Ayy5psS0FFDtyXjpBqEI2JIYPvAfls2E5Kzr01A/fljbLHHXCwX+bOgaDaQybaVx8U0t9r7mat1mqFOH96dx+/9gq27g9WySpLFisHaP3aPd0APk2i5P2R5aisL+A2UM1PnBHysYQqH/wRaRgrxMzzhQwIDAQAB",
   "minimum_chrome_version": "105",
   "incognito": "not_allowed",
   "description": "找回看过的页面，少一点重复，多一点清爽。",
@@ -15,6 +16,7 @@
     "favicon",
     "activeTab",
     "history",
+    "nativeMessaging",
     "scripting",
     "storage",
     "tabs",
@@ -46,10 +48,10 @@
       }
     },
     "rename-current-page": {
-      "description": "重命名当前网页",
+      "description": "收藏当前网页",
       "suggested_key": {
-        "default": "Alt+Shift+S",
-        "mac": "Option+Shift+S"
+        "default": "Alt+Z",
+        "mac": "Option+Z"
       }
     }
   }

@@ -24,7 +24,7 @@
           <div class="settings-row">
             <div>
               <p class="settings-row-title">导出或恢复</p>
-              <p class="settings-row-detail">包含重命名、来源名称、置顶和自动采集的标题。</p>
+              <p class="settings-row-detail">包含收藏、来源名称、置顶和自动采集的标题。</p>
             </div>
             <div class="user-data-controls" id="user-data-controls" role="group" aria-label="备份与恢复">
               <button class="secondary-button" id="export-user-data" type="button">导出</button>
@@ -33,8 +33,18 @@
             </div>
           </div>
           <p class="user-data-status" id="user-data-status" role="status" aria-live="polite" aria-atomic="true" hidden></p>
+          <div class="settings-row settings-row-divider" id="native-store-row">
+            <div class="settings-row-body">
+              <p class="settings-row-title">本机文件同步</p>
+              <p class="settings-row-detail" id="native-store-detail" role="status" aria-live="polite">正在检测本机同步服务</p>
+            </div>
+            <div class="user-data-controls" id="native-store-controls" role="group" aria-label="本机文件同步">
+              <button class="secondary-button" id="copy-native-store-command" type="button" hidden>复制命令</button>
+              <button class="secondary-button" id="sync-native-store" type="button">重新检测</button>
+            </div>
+          </div>
         </div>
-        <p class="settings-note">恢复时保留现有名称。备份不包含 Chrome 原始历史记录。</p>
+        <p class="settings-note">恢复或同步时保留现有收藏和名称。不包含 Chrome 原始历史记录。</p>
       </section>
 
       <section class="settings-group" aria-labelledby="appearance-heading">
@@ -60,7 +70,7 @@
             <p class="settings-row-detail settings-shortcut-value" data-shortcut-command="_execute_action" role="status" aria-labelledby="search-shortcut-label">正在读取…</p>
           </div>
           <div class="settings-row settings-shortcut-row">
-            <p class="settings-row-title" id="rename-shortcut-label">重命名当前网页</p>
+            <p class="settings-row-title" id="rename-shortcut-label">收藏当前网页</p>
             <p class="settings-row-detail settings-shortcut-value" data-shortcut-command="rename-current-page" role="status" aria-labelledby="rename-shortcut-label">正在读取…</p>
           </div>
           <div class="settings-card-actions">

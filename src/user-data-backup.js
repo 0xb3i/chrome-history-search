@@ -9,16 +9,20 @@ import {
   mergeUserDataFromBackup
 } from './storage.js';
 
-const BACKUP_FORMAT = 'history-dedupe-user-data';
-const BACKUP_VERSION = 2;
+export const BACKUP_FORMAT = 'history-dedupe-user-data';
+export const BACKUP_VERSION = 2;
 
-export async function exportUserDataBackup() {
+export function createUserDataBackupPayload(data, exportedAt = new Date().toISOString()) {
   return {
     format: BACKUP_FORMAT,
     version: BACKUP_VERSION,
-    exportedAt: new Date().toISOString(),
-    data: await readUserDataForBackup()
+    exportedAt,
+    data
   };
+}
+
+export async function exportUserDataBackup() {
+  return createUserDataBackupPayload(await readUserDataForBackup());
 }
 
 export async function importUserDataBackup(backup) {

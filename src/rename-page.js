@@ -10,6 +10,7 @@ import { getHistoryItemSourceLabel } from './history-utils.js';
 import { applySavedTheme } from './theme.js';
 
 const form = document.querySelector('#rename-form');
+const headingLabel = document.querySelector('#rename-heading');
 const titleInput = document.querySelector('#rename-title');
 const statusLabel = document.querySelector('#rename-status');
 const urlLabel = document.querySelector('#rename-url');
@@ -48,7 +49,7 @@ async function init() {
   const draftId = new URLSearchParams(globalThis.location.search).get('draft');
 
   if (!draftId) {
-    renderError('没有找到要重命名的网页。');
+    renderError('没有找到要收藏的网页。');
     return;
   }
 
@@ -56,7 +57,7 @@ async function init() {
     currentDraft = await loadRenameDraft(draftId);
 
     if (!currentDraft) {
-      renderError('重命名窗口已过期，请重新按快捷键。');
+      renderError('收藏窗口已过期，请重新按快捷键。');
       return;
     }
 
@@ -64,6 +65,10 @@ async function init() {
     urlLabel.textContent = getHistoryItemSourceLabel(currentDraft);
     urlLabel.title = currentDraft.url;
     canRestoreOriginalTitle = await hasTitleOverride(currentDraft.titleOverrideKey);
+    const headingText = canRestoreOriginalTitle ? '编辑收藏' : '收藏网页';
+    form.dataset.saved = String(canRestoreOriginalTitle);
+    document.title = headingText;
+    if (headingLabel) headingLabel.textContent = headingText;
     restoreButton.hidden = !canRestoreOriginalTitle;
     setPending(false);
     titleInput.select();
@@ -91,7 +96,7 @@ async function saveRename() {
       targetUrl: currentDraft.url
     });
     await deleteRenameDraft(currentDraft.id);
-    showSuccessMessage('保存成功');
+    showSuccessMessage(canRestoreOriginalTitle ? '已保存' : '已收藏');
     closeSoon();
   } catch (error) {
     setPending(false);
@@ -110,11 +115,11 @@ async function restoreOriginalTitle() {
   try {
     await deleteTitleOverrides([currentDraft.titleOverrideKey]);
     await deleteRenameDraft(currentDraft.id);
-    showSuccessMessage('已还原原名');
+    showSuccessMessage('已取消收藏');
     closeSoon();
   } catch (error) {
     setPending(false);
-    setError(error.message || '还原失败。');
+    setError(error.message || '取消收藏失败。');
   }
 }
 
@@ -137,10 +142,13 @@ function setPending(isPending) {
   titleInput.disabled = isPending;
   restoreButton.disabled = isPending || !canRestoreOriginalTitle;
   cancelButton.disabled = isPending;
-  form.querySelector('button[type="submit"]').disabled = isPending || !currentDraft ||
-    !titleInput.value.trim() || titleInput.value.trim().replace(/\s+/g, ' ') ===
-    String(currentDraft.currentTitle ?? '').trim().replace(/\s+/g, ' ');
-  form.querySelector('button[type="submit"]').textContent = isPending ? '处理中' : '保存';
+  const submitButton = form.querySelector('button[type="submit"]');
+  const normalizedValue = titleInput.value.trim().replace(/\s+/g, ' ');
+  const normalizedInitial = String(currentDraft?.currentTitle ?? '').trim().replace(/\s+/g, ' ');
+  // Unbookmarked pages can be saved directly without changing their title.
+  const unchangedExisting = canRestoreOriginalTitle && normalizedValue === normalizedInitial;
+  submitButton.disabled = isPending || !currentDraft || !normalizedValue || unchangedExisting;
+  submitButton.textContent = isPending ? '处理中' : (canRestoreOriginalTitle ? '保存' : '收藏');
 
   if (isPending) {
     setError('');

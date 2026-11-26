@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
+import { deriveExtensionIdFromPublicKey } from '../native-host/install.mjs';
 
 const manifest = JSON.parse(readFileSync(new URL('../manifest.json', import.meta.url), 'utf8'));
 const packageJson = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
@@ -40,12 +41,18 @@ test('rename command opens a service-worker handled shortcut', () => {
     type: 'module'
   });
   assert.equal(manifest.permissions.includes('storage'), true);
+  assert.equal(manifest.permissions.includes('nativeMessaging'), true);
   assert.equal(manifest.permissions.includes('tabs'), true);
   assert.equal(manifest.permissions.includes('activeTab'), true);
   assert.equal(manifest.permissions.includes('alarms'), false);
   assert.equal(manifest.permissions.includes('scripting'), true);
   assert.deepEqual(manifest.commands['rename-current-page'].suggested_key, {
-    default: 'Alt+Shift+S',
-    mac: 'Option+Shift+S'
+    default: 'Alt+Z',
+    mac: 'Option+Z'
   });
+});
+
+test('manifest pins a valid static public key so unpacked reloads keep one extension ID', () => {
+  assert.equal(typeof manifest.key, 'string');
+  assert.match(deriveExtensionIdFromPublicKey(manifest.key), /^[a-p]{32}$/);
 });

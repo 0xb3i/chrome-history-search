@@ -20,6 +20,11 @@ import {
   HISTORY_INDEX_ENSURE_MESSAGE,
   HISTORY_INDEX_UPDATED_MESSAGE
 } from './history-index/protocol.js';
+import {
+  NATIVE_STORE_STATUS_MESSAGE,
+  NATIVE_STORE_SYNC_MESSAGE,
+  createNativeStoreController
+} from './native-store.js';
 
 const RENAME_CURRENT_PAGE_COMMAND = 'rename-current-page';
 const RENAME_WINDOW_WIDTH = 440;
@@ -40,6 +45,9 @@ const historyIndexService = createHistoryIndexService({
   store: historyIndexStore,
   notifyUpdated: notifyHistoryIndexUpdated
 });
+const nativeStore = createNativeStoreController();
+
+void nativeStore.ensureHydrated().catch(() => {});
 
 globalThis.chrome?.webNavigation?.onBeforeNavigate?.addListener((details) => {
   navigationTracker.beforeNavigate(details);
@@ -81,14 +89,17 @@ globalThis.chrome?.storage?.onChanged?.addListener((changes, areaName) => {
   ) {
     scheduleDerivedIndexRebuild();
   }
+  nativeStore.handleStorageChanged(changes, areaName);
 });
 globalThis.chrome?.runtime?.onStartup?.addListener(() => {
   captureOpenTabTitles();
   void historyIndexService.ensureReady().catch(() => {});
+  void nativeStore.ensureHydrated().catch(() => {});
 });
 globalThis.chrome?.runtime?.onInstalled?.addListener(() => {
   captureOpenTabTitles();
   void historyIndexService.ensureReady().catch(() => {});
+  void nativeStore.ensureHydrated().catch(() => {});
 });
 
 globalThis.chrome?.commands?.onCommand?.addListener((command) => {
@@ -117,6 +128,20 @@ globalThis.chrome?.runtime?.onMessage?.addListener((message, _sender, sendRespon
     restoreInlineRename(message)
       .then(() => sendResponse({ ok: true }))
       .catch((error) => sendResponse({ ok: false, error: error.message || '还原失败。' }));
+    return true;
+  }
+
+  if (message?.type === NATIVE_STORE_STATUS_MESSAGE) {
+    nativeStore.getStatus()
+      .then((status) => sendResponse({ ok: true, status }))
+      .catch((error) => sendResponse({ ok: false, error: error.message || '无法读取本机同步状态。' }));
+    return true;
+  }
+
+  if (message?.type === NATIVE_STORE_SYNC_MESSAGE) {
+    nativeStore.syncNow()
+      .then((status) => sendResponse({ ok: true, status }))
+      .catch((error) => sendResponse({ ok: false, error: error.message || '本机同步失败。' }));
     return true;
   }
 

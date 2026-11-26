@@ -4,6 +4,11 @@ import test from 'node:test';
 import vm from 'node:vm';
 import { parseHTML } from 'linkedom';
 
+import {
+  NATIVE_STORE_STATUS_MESSAGE,
+  NATIVE_STORE_SYNC_MESSAGE
+} from '../src/native-store.js';
+
 const source = await readFile(new URL('../src/user-data-controls.js', import.meta.url), 'utf8');
 const executable = source.replace(/import\s+\{[^}]+\}\s+from\s+'[^']+';/g, '')
   .replace('export function initializeUserDataControls', 'function initializeUserDataControls');
@@ -16,15 +21,34 @@ async function createControls(options = {}) {
   const downloads = [];
   const timers = [];
   const imports = [];
+  const nativeMessages = [];
+  const copied = [];
   let exportCalls = 0;
   let filePickerCalls = 0;
+  const chrome = options.onNativeMessage ? {
+    runtime: {
+      sendMessage(message, callback) {
+        nativeMessages.push(message);
+        Promise.resolve(options.onNativeMessage(message)).then(callback);
+      }
+    }
+  } : undefined;
   const context = vm.createContext({
     document, Blob, Date,
+    NATIVE_STORE_STATUS_MESSAGE,
+    NATIVE_STORE_SYNC_MESSAGE,
+    chrome,
+    navigator: {
+      clipboard: {
+        async writeText(text) { copied.push(text); }
+      }
+    },
     URL: {
       createObjectURL(blob) { blobs.push(blob); return `blob:backup-${blobs.length}`; },
       revokeObjectURL(url) { revoked.push(url); }
     },
-    setTimeout(callback, delay) { timers.push({ callback, delay }); },
+    setTimeout(callback, delay) { timers.push({ callback, delay }); return timers.length; },
+    clearTimeout() {},
     async exportUserDataBackup() {
       exportCalls += 1;
       return options.exportBackup ? options.exportBackup() : { format: 'history-dedupe-user-data', version: 1, data: {} };
@@ -47,7 +71,7 @@ async function createControls(options = {}) {
     fileInput.value = file ? 'backup.json' : '';
     fileInput.dispatchEvent(new window.Event('change'));
   }
-  return { one, document, blobs, revoked, downloads, timers, imports, selectFile,
+  return { one, document, window, blobs, revoked, downloads, timers, imports, nativeMessages, copied, selectFile,
     get exportCalls() { return exportCalls; }, get filePickerCalls() { return filePickerCalls; } };
 }
 
@@ -59,7 +83,7 @@ test('imports parsed backup, reports total counts and permits selecting the same
   ui.selectFile(text);
   await settle();
   assert.equal(JSON.stringify(ui.imports[0]), text);
-  assert.match(ui.one('#user-data-status').textContent, /现有 2 条重命名、1 个分组名称、3 条置顶/);
+  assert.match(ui.one('#user-data-status').textContent, /现有 2 条收藏、1 个分组名称、3 条置顶/);
   assert.match(ui.one('#user-data-status').textContent, /4 条自动采集标题/);
   assert.equal(ui.one('#user-data-status').dataset.error, 'false');
   assert.equal(ui.one('#user-data-status').hidden, false);
@@ -161,4 +185,52 @@ test('export errors are visible and allow retry', async () => {
   await settle();
   assert.equal(ui.downloads.length, 1);
   assert.equal(ui.one('#user-data-status').dataset.error, 'false');
+});
+
+test('native store controls display install guidance, copy command, and transition to connected sync', async () => {
+  let state = { state: 'unavailable', path: '', error: '' };
+  const ui = await createControls({
+    onNativeMessage(message) {
+      if (message.type === NATIVE_STORE_SYNC_MESSAGE) {
+        state = { state: 'connected', path: '/Users/demo/.config/miaoji/user-data.json', error: '' };
+      }
+      return { ok: true, status: state };
+    }
+  });
+  await settle();
+  assert.equal(ui.nativeMessages[0].type, NATIVE_STORE_STATUS_MESSAGE);
+  assert.match(ui.one('#native-store-detail').textContent, /npm run local-store:install/);
+  assert.equal(ui.one('#copy-native-store-command').hidden, false);
+  assert.equal(ui.one('#sync-native-store').textContent, '重新检测');
+
+  ui.one('#copy-native-store-command').click();
+  await settle();
+  assert.deepEqual(ui.copied, ['npm run local-store:install']);
+  assert.equal(ui.one('#copy-native-store-command').textContent, '已复制');
+
+  ui.one('#sync-native-store').click();
+  await settle();
+  assert.equal(ui.nativeMessages[1].type, NATIVE_STORE_SYNC_MESSAGE);
+  assert.match(ui.one('#native-store-detail').textContent, /\/Users\/demo\/\.config\/miaoji\/user-data\.json/);
+  assert.equal(ui.one('#copy-native-store-command').hidden, true);
+  assert.equal(ui.one('#sync-native-store').textContent, '立即同步');
+});
+
+test('native store controls surface file format errors with a retry button', async () => {
+  const ui = await createControls({
+    onNativeMessage() {
+      return {
+        ok: true,
+        status: {
+          state: 'error',
+          path: '/Users/demo/.config/miaoji/user-data.json',
+          error: '本机数据文件格式异常，已暂停自动写入。'
+        }
+      };
+    }
+  });
+  await settle();
+  assert.equal(ui.one('#native-store-detail').dataset.error, 'true');
+  assert.match(ui.one('#native-store-detail').textContent, /格式异常/);
+  assert.equal(ui.one('#sync-native-store').textContent, '重试同步');
 });

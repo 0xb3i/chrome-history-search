@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>重命名网页</title>
+    <title>收藏网页</title>
     <link rel="icon" type="image/png" sizes="16x16" href="icons/cat-16.png">
     <link rel="icon" type="image/png" sizes="32x32" href="icons/cat-32.png">
     <link rel="stylesheet" href="src/styles.css">
@@ -12,21 +12,24 @@
     <main class="rename-panel">
       <form id="rename-form" class="rename-dialog-form">
         <header class="rename-dialog-header">
-          <h1>重命名网页</h1>
+          <h1 class="rename-dialog-title">
+            <span class="bookmark-dialog-icon" aria-hidden="true"></span>
+            <span id="rename-heading">收藏网页</span>
+          </h1>
           <p id="rename-url" class="rename-dialog-url"></p>
         </header>
         <label class="field">
           <span>名称</span>
-          <input id="rename-title" type="text" autocomplete="off" autofocus>
+          <input id="rename-title" type="text" placeholder="输入便于检索的名称" autocomplete="off" autofocus>
         </label>
 
         <p id="rename-status" class="rename-status rename-dialog-status" role="alert"></p>
 
         <div class="rename-dialog-actions">
-          <button id="restore-button" class="secondary-button rename-restore" type="button">还原原名</button>
+          <button id="restore-button" class="secondary-button rename-restore" type="button">取消收藏</button>
           <div class="rename-primary-actions">
             <button id="cancel-button" class="secondary-button" type="button">取消</button>
-            <button class="primary-button" type="submit">保存</button>
+            <button class="primary-button" type="submit">收藏</button>
           </div>
         </div>
       </form>

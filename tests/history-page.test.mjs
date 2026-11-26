@@ -61,7 +61,8 @@ function completeDom(window, document) {
 }
 
 async function createPage({ file = 'popup.html', platform = 'Win32', items = [], titles = new Map(), groupNames = new Map(), saved = { query: '', range: 'all' },
-  loadPreferences = async () => saved, loadIndex = async () => ({ revision: 1, pageItems: items }) } = {}) {
+  loadPreferences = async () => saved, loadIndex = async () => ({ revision: 1, pageItems: items }),
+  saveTitleOverride = imports.saveTitleOverride, deleteTitleOverrides = imports.deleteTitleOverrides } = {}) {
   const { window, document } = parseHTML(await readFile(new URL(`../${file}`, import.meta.url), 'utf8'));
   completeDom(window, document);
   const timers = new Map();
@@ -87,6 +88,8 @@ async function createPage({ file = 'popup.html', platform = 'Win32', items = [],
     loadPinnedUrlKeys: async () => new Set(),
     loadGroupNameOverrides: async () => groupNames,
     loadTitleOverrides: async () => titles,
+    saveTitleOverride,
+    deleteTitleOverrides,
     loadLastSearchState: loadPreferences,
     saveLastSearchState: async (state, view) => { writes.push(state); writeViews.push(view); },
     chrome: {
@@ -475,7 +478,7 @@ test('popup rows keep the source beside the title and state and time in separate
     ['result-title-row', 'result-state', 'result-meta']);
   assert.deepEqual([...row.querySelector('.result-title-row').children].map((child) => child.className.split(' ')[0]),
     ['result-title', 'result-host']);
-  assert.equal(row.querySelector('.result-state .result-custom-label').textContent, '已命名');
+  assert.equal(row.querySelector('.result-state .result-custom-label').textContent, '已收藏');
   assert.match(row.querySelector('.result-time').title, /1 次访问/);
   assert.equal(row.querySelector('.result-host').dataset.initial, 'E');
   const hint = page.one('#primary-key-hint');
@@ -494,7 +497,7 @@ test('⌘K and right-click open the focused row\'s actions: open, copy, rename, 
   const labels = page.openActions(second).map((item) => item.querySelector('.actions-item-label').textContent);
   assert.equal(panel.hidden, false);
   assert.equal(page.one('#actions-title').textContent, '乙文档');
-  assert.deepEqual(labels, ['打开', '复制链接', '重命名网页', '固定到顶部', '只看此来源', '修改来源名称']);
+  assert.deepEqual(labels, ['打开', '复制链接', '收藏网页', '固定到顶部', '只看此来源', '修改来源名称']);
   assert.equal(page.document.activeElement, page.action('打开'));
   page.fire(panel, 'keydown', { key: 'Escape' });
   assert.equal(panel.hidden, true);
@@ -505,15 +508,18 @@ test('⌘K and right-click open the focused row\'s actions: open, copy, rename, 
   const dialog = page.one('dialog[open]');
   assert.equal(dialog.querySelector('h2').textContent, '修改分组名');
   assert.equal(dialog.querySelector('input').value, 'docs.example.org');
+  assert.equal(page.button('保存', dialog).disabled, true);
   page.button('取消', dialog).click();
 
   page.fire(second, 'contextmenu');
   assert.equal(panel.hidden, false);
-  page.action('重命名网页').click();
-  assert.equal(page.one('dialog[open]').getAttribute('aria-label'), '重命名网页');
-  assert.equal(page.one('dialog[open] .rename-dialog-url').textContent, 'docs.example.org');
-  assert.equal(page.one('dialog[open] .rename-dialog-url').title, items[1].url);
-  page.button('取消', page.one('dialog[open]')).click();
+  page.action('收藏网页').click();
+  const bookmarkDialog = page.one('dialog[open]');
+  assert.equal(bookmarkDialog.getAttribute('aria-label'), '收藏网页');
+  assert.equal(bookmarkDialog.querySelector('.rename-dialog-url').textContent, 'docs.example.org');
+  assert.equal(bookmarkDialog.querySelector('.rename-dialog-url').title, items[1].url);
+  assert.equal(page.button('收藏', bookmarkDialog).disabled, false);
+  page.button('取消', bookmarkDialog).click();
 
   page.openActions(second);
   page.action('只看此来源').click();
@@ -583,11 +589,12 @@ test('result navigation joins the page, preserves refresh focus, and leaves rena
   page.fire(page.document.activeElement, 'keydown', { key: 'Escape' });
   assert.equal(page.document.activeElement, query);
   page.openActions(page.one('.popup-results .result-item'));
-  page.action('重命名网页').click();
+  page.action('收藏网页').click();
   const dialog = page.one('dialog[open]');
-  assert.equal(dialog.getAttribute('aria-label'), '重命名网页');
+  assert.equal(dialog.getAttribute('aria-label'), '收藏网页');
   assert.deepEqual([...dialog.querySelector('.rename-primary-actions').children].map((button) => button.textContent),
-    ['取消', '保存']);
+    ['取消', '收藏']);
+  assert.equal(page.button('收藏', dialog).disabled, false);
   assert.equal(dialog.querySelector('.rename-dialog-url').textContent, 'example.com');
   assert.equal(dialog.querySelector('.rename-dialog-url').title, items[1].url);
   assert.equal(page.fire(query, 'keydown', { key: 'ArrowDown' }).defaultPrevented, false);
@@ -815,7 +822,7 @@ test('renamed-only shortcut ignores IME, held keys, extra modifiers and rename d
     assert.equal(page.one('#renamed-only').checked, false);
   }
   page.openActions(page.one('.result-item'));
-  page.action('重命名网页').click();
+  page.action('收藏网页').click();
   const input = page.one('dialog[open] input');
   const value = input.value;
   assert.equal(page.fire(input, 'keydown', key).defaultPrevented, false);
@@ -834,4 +841,36 @@ test('renamed-only shortcut selected during initialization survives late saved p
   assert.equal(page.one('#renamed-only').checked, true);
   assert.equal(page.one('#view-options').classList.contains('is-filtered'), true);
   assert.equal(page.writes.at(-1).showRenamedOnly, true);
+});
+
+test('bookmarking a page directly without changing its title marks it bookmarked and switches action to edit', async () => {
+  const items = [pageItem('架构设计文档', 'arch')];
+  const saved = [];
+  const page = await createPage({
+    items,
+    saveTitleOverride: async (key, title, options) => {
+      saved.push({ key, title, targetUrl: options.targetUrl });
+      page.storageChanged({
+        [imports.TITLE_OVERRIDES_STORAGE_KEY]: {
+          newValue: { [key]: { title, targetUrl: options.targetUrl, updatedAt: 100 } }
+        }
+      }, 'local');
+    }
+  });
+  page.openActions(page.one('.result-item'));
+  page.action('收藏网页').click();
+  const dialog = page.one('dialog[open]');
+  assert.equal(page.button('收藏', dialog).disabled, false);
+  page.fire(dialog.querySelector('form'), 'submit');
+  await settle();
+  assert.deepEqual(saved, [{ key: items[0].dedupeKey, title: '架构设计文档', targetUrl: items[0].url }]);
+  assert.equal(page.one('.result-state .result-custom-label').textContent, '已收藏');
+
+  page.openActions(page.one('.result-item'));
+  assert.ok(page.action('编辑收藏'));
+  page.action('编辑收藏').click();
+  const editDialog = page.one('dialog[open]');
+  assert.equal(editDialog.getAttribute('aria-label'), '编辑收藏');
+  assert.equal(page.button('取消收藏', editDialog).hidden, false);
+  assert.equal(page.button('保存', editDialog).disabled, true);
 });

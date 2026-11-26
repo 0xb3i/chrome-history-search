@@ -29,6 +29,7 @@ test('popup is the only search surface and settings live on the options page', (
   }
   assert.doesNotMatch(popupHtml, /history\.html/);
   for (const id of ['user-data-controls', 'export-user-data', 'import-user-data', 'user-data-file', 'user-data-status',
+    'native-store-row', 'native-store-detail', 'copy-native-store-command', 'sync-native-store',
     'shortcut-settings', 'app-version', 'theme-color']) {
     assert.match(optionsHtml, new RegExp(`id="${id}"`), id);
   }
@@ -119,7 +120,7 @@ test('search clear control uses the flat Ant allowClear affordance', () => {
 
 test('row actions live in the ⌘K panel rather than as buttons on each row', () => {
   assert.doesNotMatch(historyPageJs, /item-action-button/);
-  for (const label of ['打开', '复制链接', '重命名网页', '只看此来源', '修改来源名称', '同名的其他链接']) {
+  for (const label of ['打开', '复制链接', '收藏网页', '编辑收藏', '只看此来源', '修改来源名称', '同名的其他链接']) {
     assert.ok(historyPageJs.includes(`'${label}'`), label);
   }
   assert.ok(css.includes('.rename-filter input:checked'));
@@ -155,7 +156,7 @@ test('theme palettes cover surfaces and content rather than only accent colors',
 });
 
 test('result state icons stay compact and result rows do not select text accidentally', () => {
-  assert.ok(historyPageJs.includes("label.textContent = '已命名'"));
+  assert.ok(historyPageJs.includes("label.textContent = '已收藏'"));
   assert.ok(!historyPageJs.includes('createNamedIcon'));
   assert.match(css, /\.result-state-icon \{[^}]*color: var\(--subtle\);/);
   assert.match(css, /\.result-state-icon svg \{[^}]*width: 12px;[^}]*height: 12px;/);
@@ -184,8 +185,8 @@ test('rename errors are inline and success messages use floating Ant styling', (
 
 test('inline rename surface uses shadow DOM and labeled actions', () => {
   assert.ok(renameOverlayJs.includes("host.attachShadow({ mode: 'open' })"));
-  for (const label of ['保存', '还原原名', '取消']) {
-    assert.ok(renameOverlayJs.includes(`textContent = '${label}'`));
+  for (const label of ['收藏', '保存', '取消收藏', '取消']) {
+    assert.ok(renameOverlayJs.includes(`'${label}'`), label);
   }
   assert.match(renameOverlayJs, /new URL\(draft\.url\)/);
   assert.ok(renameOverlayJs.includes('deduped-history:init-inline-rename'));
